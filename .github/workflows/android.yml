@@ -1,36 +1,26 @@
-name: Android Build
+name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        
-    - name: Setup JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        
-    - name: Install dependencies
-      run: npm install
-      
-    - name: Build Android APK
-      run: |
-        npm run android:build
-      
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
-      with:
-        name: app-apk
-        path: android/app/build/outputs/apk/release/app-release.apk
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm install
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - run: cd android && ./gradlew assembleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: release/app-release.apk
